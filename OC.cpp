@@ -16,7 +16,11 @@ DWORD WINAPI bubbleSort (){
 int main(void) {
 	const int len = 100000;
 	int* array = new int[len];
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
 	randomGen(array, len);
+	if (CreateProcess(L"C:\\Windows\\System32\\notepad.exe", NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) std::cout << "Creating success" << std::endl;
+	else { std::cout << "Creating fail" << std::endl; return 0; };
 
 
 }
