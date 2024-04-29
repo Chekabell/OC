@@ -1,42 +1,7 @@
 ﻿#include <iostream>
 #include <Windows.h>
-#include <strsafe.h>
 
 #define BUFF_SIZE 2048
-
-void ErrorExit(LPCTSTR lpszFunction)
-{
-	// Retrieve the system error message for the last-error code
-
-	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
-	DWORD dw = GetLastError();
-
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		dw,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf,
-		0, NULL);
-
-	// Display the error message and exit the process
-
-	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
-		(lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR));
-	StringCchPrintfW((LPTSTR)lpDisplayBuf,
-		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error %d: %s"),
-		lpszFunction, dw, lpMsgBuf);
-	MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK);
-
-	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
-	ExitProcess(dw);
-}
-
 
 int main(void) {
 	HANDLE handleChildRd;
@@ -63,21 +28,24 @@ int main(void) {
 	std::wstring CommandLine(L"C:\\Users\\User\\source\\repos\\Sub OS\\x64\\Release\\Sub OS.exe");
 	LPWSTR lpwCmdLine = &CommandLine[0];
 
-	if (!CreateProcess(NULL, lpwCmdLine, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &startInfo, &processInfo)) {
+	if (!CreateProcessW(NULL, lpwCmdLine, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &startInfo, &processInfo)) {
 		std::cout << "Failed creating sub process" << std::endl;
 	}
 
-	DWORD dwWrite;
-	CHAR buffer[BUFF_SIZE] = "63728" ;
+	DWORD dwWritten;
+	CHAR buffer[BUFF_SIZE] = "1623623" ;
 	
-	if (!WriteFile(handleParentWr, buffer, (DWORD)sizeof(buffer), &dwWrite, NULL)) {
+	for (int i = 0; buffer[i] != '\0'; i++) {
+		std::cout << ((int)buffer[i] - '0') << " ";
+	}
+
+	if (!WriteFile(handleParentWr, buffer, (DWORD)sizeof(buffer), &dwWritten, NULL)) {
 		std::cout << "Failed writing to pipe!" << std::endl;
 	}
+	
+	std::cout << "\n\n" << *((int*)&dwWritten);
 
-	if (!CloseHandle(handleParentWr)) {
-		std::cout << "Failed closing handleParent wr!" << std::endl;
-	}
-
+	CloseHandle(handleParentWr);
 	CloseHandle(processInfo.hProcess);
 	CloseHandle(processInfo.hThread);
 
