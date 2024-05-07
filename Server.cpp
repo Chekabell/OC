@@ -11,7 +11,7 @@
 const int servPort = 4542;
 const int clientPort = 4545;
 
-DWORD WINAPI startServer() {
+DWORD WINAPI startServer(LPVOID lParam) {
 	WSADATA wsData;
 
 	int erStat = WSAStartup(MAKEWORD(2, 2), &wsData);
@@ -119,7 +119,7 @@ DWORD WINAPI startServer() {
 	return 0;
 }
 
-DWORD WINAPI startClient() {
+DWORD WINAPI startClient(LPVOID lParam) {
 	WSADATA wsData;
 
 	int erStat = WSAStartup(MAKEWORD(2, 2), &wsData);
@@ -209,17 +209,13 @@ DWORD WINAPI startClient() {
 }
 
 int main(void) {
-	HANDLE server;
+
+	startServer(nullptr);
+
 	HANDLE client;
-
-	SECURITY_ATTRIBUTES serverSec;
-	ZeroMemory(&serverSec, sizeof(serverSec));
-
-	server = CreateThread(&serverSec,0,startServer,)
-
 	SECURITY_ATTRIBUTES clientSec;
 	ZeroMemory(&clientSec, sizeof(clientSec));
 
-	CreateThread()
+	CreateThread(&clientSec, 0, &startClient, 0, 0, (LPDWORD)&client);
 
 }
