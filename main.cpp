@@ -37,7 +37,7 @@ DWORD __stdcall producer(void* b) {
 		std::cout << "Put: " << item << std::endl;
 		Sleep(500 + rand() % 100);
 		ReleaseSemaphore(semaphoreForConsumer, 1, 0);
-		ReleaseSemaphore(mutex, 1, 0);
+		ReleaseMutex(mutex);
 	}
 	return 0;
 }
@@ -49,19 +49,20 @@ DWORD __stdcall consumer(void* b) {
 		std::cout << "Get: " << ((Buffer*)b)->GetItem() << std::endl;
 		Sleep(500 + rand() % 100);
 		ReleaseSemaphore(semaphoreForProducer, 1, 0);
-		ReleaseSemaphore(mutex, 1, 0);
+		ReleaseMutex(mutex);
 	}
 
 	return 0;
 }
 
 int main(void) {
-	mutex = CreateSemaphoreW(0, 1, 1, 0);
+	srand(time(NULL));
+	mutex = CreateMutexW(0, 0, 0);
 	semaphoreForProducer = CreateSemaphoreW(0, BufferSize, BufferSize, 0);
 	semaphoreForConsumer = CreateSemaphoreW(0, 0, BufferSize, 0);
 	Buffer* Buf = Buffer::CreateBuffer(BufferSize); /*Создание буфера*/
 	HANDLE hThreads[cProducers + cConsumers];
-	/*Всопомгательный поток, ожидающий нажатия клавиши*/
+	/*Вспомгательный поток, ожидающий нажатия клавиши*/
 	CreateThread(0, 0, getkey, 0, 0, 0);
 
 	for (int i = 0; i < cProducers; i++)
