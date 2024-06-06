@@ -156,12 +156,14 @@ static void checkThread(Priority p, const int len) {
 
 	HANDLE additTh1 = CreateThread(NULL, 0, &bubbleSort, &arrInf1, CREATE_SUSPENDED, NULL);
 	SetThreadPriority(additTh1, aPriority);
+	std::cout << "Priority: " << GetThreadPriority(additTh1) << std::endl;
 
 	HANDLE additTh2 = CreateThread(NULL, 0, &quickSort, &arrInf2, CREATE_SUSPENDED, NULL);
 	SetThreadPriority(additTh2, bPriority);
+	std::cout << "Priority: " << GetThreadPriority(additTh2) << std::endl;
 
-	SetProcessPriorityBoost(additTh1, TRUE);
-	SetProcessPriorityBoost(additTh2, TRUE);
+	SetThreadPriorityBoost(additTh1, FALSE);
+	SetThreadPriorityBoost(additTh2, FALSE);
 
 	ResumeThread(additTh1);
 	ResumeThread(additTh2);
@@ -196,15 +198,15 @@ static void checkThread(Priority p, const int len) {
 	std::cout << "Core time: " << st7.wMinute << ":" << st7.wSecond << ":" << st7.wMilliseconds << std::endl;
 	std::cout << "User time: " << st8.wMinute << ":" << st8.wSecond << ":" << st8.wMilliseconds << std::endl;
 
-	TerminateThread(additTh1, 0);
-	TerminateThread(additTh2, 0);
-
 	CloseHandle(additTh1);
 	CloseHandle(additTh2);
+
+	additTh1 = NULL;
+	additTh2 = NULL;
 }
 
 int main(void) {
-	const int len = 1000;
+	const int len = 50000;
 	
 	std::cout << "Bubble - standard || Quick - standard" << std::endl;
 	checkThread(Priority::Standard, len);
