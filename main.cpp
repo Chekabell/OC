@@ -9,7 +9,7 @@
 #define cConsumers 5 /*Количество потребителей*/
 #define BufferSize 5 /*Размер буфера*/
 
-int cOperations = 1000; /*Количество операций над буфером*/
+int cOperations = 10; /*Количество операций над буфером*/
 
 DWORD __stdcall getkey(void* b) {
 	cin.get();
@@ -51,7 +51,6 @@ DWORD __stdcall consumer(void* b) {
 		ReleaseSemaphore(semaphoreForProducer, 1, 0);
 		ReleaseMutex(mutex);
 	}
-
 	return 0;
 }
 
@@ -62,7 +61,7 @@ int main(void) {
 	semaphoreForConsumer = CreateSemaphoreW(0, 0, BufferSize, 0);
 	Buffer* Buf = Buffer::CreateBuffer(BufferSize); /*Создание буфера*/
 	HANDLE hThreads[cProducers + cConsumers];
-	/*Вспомгательный поток, ожидающий нажатия клавиши*/
+	/*Вспомогательный поток, ожидающий нажатия клавиши*/
 	CreateThread(0, 0, getkey, 0, 0, 0);
 
 	for (int i = 0; i < cProducers; i++)
