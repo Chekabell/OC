@@ -5,23 +5,16 @@
 #include <vector>
 #include <Windows.h>
 
-//struct CI {
-//	SOCKET sock;
-//	char* ip[30];
-//};
-
 #pragma comment(lib,"ws2_32.lib")
 #define BUFF_SIZE 512
 
 std::vector<SOCKET> clientsSocket;
 
 DWORD WINAPI startClientThread(LPVOID lpParam) {
-	//CI* client = (CI*)lpParam;
 	SOCKET client = (SOCKET)lpParam;
 	char buffer[BUFF_SIZE];
 	while (true) {
 		int packet_size = recv(client, buffer, BUFF_SIZE, 0);
-		//strcat_s(*client->ip, 482, *buffer);
 
 		if (packet_size == INVALID_SOCKET) {
 			closesocket(client);
@@ -100,8 +93,6 @@ int main(void) {
 		int clientInfo_size = sizeof(clientInfo);
 
 		SOCKET ClientConn = accept(ServSock, (sockaddr*)&clientInfo, &clientInfo_size);
-		//CI cli;
-		//cli.sock = ClientConn;
 
 		if (ClientConn == INVALID_SOCKET) {
 			std::cout << "Client detected, but can't connect to a client. Error #" << WSAGetLastError() << std::endl;
@@ -114,8 +105,6 @@ int main(void) {
 
 			char clientIP[22];
 			inet_ntop(AF_INET, &clientInfo.sin_addr, clientIP, INET_ADDRSTRLEN);
-			//strcat_s(clientIP, 30, (char*)clientInfo.sin_port);
-			//strcpy_s(*cli.ip, 22, clientIP);
 			std::cout << "Client IP: " << clientIP << ":" << clientInfo.sin_port << std::endl;
 
 			clientsSocket.push_back(ClientConn);
